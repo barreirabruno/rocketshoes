@@ -1,120 +1,62 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { MdAddShoppingCart } from 'react-icons/md';
+import { formatPrice } from '../../util/format';
+import api from '../../services/api';
 
 import { ProductList } from './styles';
 
-export default function Home() {
-  return (
-    <ProductList>
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
+class Home extends Component {
+  state = {
+    products: [],
+  };
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+  async componentDidMount() {
+    const response = await api.get('products');
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price),
+    }));
 
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
+    this.setState({ products: data });
+  }
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+  handleAddProduct = product => {
+    const { dispatch } = this.props;
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
+    dispatch({
+      type: 'ADD_TO_CART',
+      product,
+    });
+  };
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+  render() {
+    const { products } = this.state;
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
+    return (
+      <ProductList>
+        {products.map(product => (
+          <li key={product.id}>
+            <img src={product.image} alt={product.title} />
+            <strong>{product.title}</strong>
+            <span>{product.priceFormatted}</span>
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+            <button
+              type="button"
+              onClick={() => this.handleAddProduct(product)}
+            >
+              <div>
+                <MdAddShoppingCart size={16} color="#FFF" /> 3
+              </div>
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
-
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
-      {/* LI INIT */}
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-nike-delfine-masculino/08/HZM-1662-008/HZM-1662-008_zoom1.jpg"
-          alt="Tênis"
-        />
-        <strong>Tênis de corrida</strong>
-        <span>R$500,00</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
-
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      {/* LI END */}
-    </ProductList>
-  );
+              <span>ADICIONAR AO CARRINHO</span>
+            </button>
+          </li>
+        ))}
+      </ProductList>
+    );
+  }
 }
+
+export default connect()(Home);
